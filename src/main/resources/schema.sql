@@ -16,10 +16,11 @@ PRIMARY KEY (uid)
 create table limitTrades(
 lid int(255) NOT NULL AUTO_INCREMENT,
 uid int(255) NOT NULL,
-size varchar(255) NOT NULL,
+size int(255) NOT NULL,
 Type varchar(255) NOT NULL,
 price double(255) NOT NULL,
-Time time,
+Time timestamp,
+Timelimit int(255) NOT NULL,
 currpair varchar(255),
 PRIMARY KEY (lid)
 );
@@ -28,11 +29,11 @@ PRIMARY KEY (lid)
 create table marketTrades(
 mid int(255) NOT NULL AUTO_INCREMENT,
 uid int(255) NOT NULL,
-size varchar(255) NOT NULL,
+size int(255) NOT NULL,
 Type varchar(255) NOT NULL,
 price double(255) NOT NULL,
-Time time,
 currpair varchar(255),
+Time timestamp,
 PRIMARY KEY (mid)
 );
 
@@ -43,9 +44,9 @@ suid int(255) NOT NULL,
 mid int(255) NOT NULL,
 lid int(255) NOT NULL,
 currpair varchar(255),
-size varchar(255) NOT NULL,
+size int(255) NOT NULL,
 price double(255) NOT NULL,
-Time time,
+Time timestamp,
 PRIMARY KEY (fid)
 );
 
@@ -54,6 +55,6 @@ hid int(255) NOT NULL AUTO_INCREMENT,
 currpair varchar(255),
 size int(255) NOT NULL,
 price double(255) NOT NULL,
-Time time,
+Time timestamp,
 PRIMARY KEY (hid)
 );
