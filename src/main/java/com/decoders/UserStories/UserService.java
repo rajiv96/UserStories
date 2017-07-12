@@ -22,8 +22,8 @@ public class UserService {
 private JdbcTemplate jdbcTemplate;
 
 @Transactional
-public int createMarketOrder(MarketOrderRepository m){
-	final String sql="insert into marketTrades(uid,size,Type,currpair,price,Time) values(?,?,?,?,?,?)";
+public int createMarketOrder(TradeRepository m){
+	final String sql="insert into trade(uid,size,Type,currpair,Time,tradetype) values(?,?,?,?,?,?)";
 	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
 	GeneratedKeyHolder holder = new GeneratedKeyHolder();
 	jdbcTemplate.update(new PreparedStatementCreator() {
@@ -36,8 +36,9 @@ public int createMarketOrder(MarketOrderRepository m){
 		        statement.setLong(2, m.getSize());
 		        statement.setString(3, m.getType().toString());
 		        statement.setString(4, m.getCurrpair());
-		        statement.setDouble(5, m.getPrice());
-		        statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+		       // statement.setDouble(5, m.getPrice());
+		        statement.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+		        statement.setString(6,"market");
 		        return statement;
 		}
 	}, holder);
@@ -50,8 +51,8 @@ public int createMarketOrder(MarketOrderRepository m){
 }
 
 @Transactional
-public int createLimitOrder(LimitOrderRepository m){
-	final String sql="insert into limitTrades(uid,size,Type,currpair,price,Time,Timelimit) values(?,?,?,?,?,?,?)";
+public int createLimitOrder(TradeRepository m){
+	final String sql="insert into trade(uid,size,Type,currpair,price,Limittime,Time,tradetype) values(?,?,?,?,?,?,?,?)";
 	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
 	GeneratedKeyHolder holder = new GeneratedKeyHolder();
 	jdbcTemplate.update(new PreparedStatementCreator() {
@@ -62,11 +63,13 @@ public int createLimitOrder(LimitOrderRepository m){
 			  PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		        statement.setInt(1, m.getUid());
 		        statement.setLong(2, m.getSize());
-		        statement.setString(3, m.getType().toString());
+		        statement.setString(3, m.getType().name());
 		        statement.setString(4, m.getCurrpair());
 		        statement.setDouble(5, m.getPrice());
-		        statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-		        statement.setInt(7,m.getTimelimit());
+		        System.out.println(m.getLimittime());
+		        statement.setInt(6,m.getLimittime());
+		        statement.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));   
+		        statement.setString(8, "limit");
 		        return statement;
 		}
 	}, holder);
@@ -77,4 +80,10 @@ public int createLimitOrder(LimitOrderRepository m){
 	
 	//return m.getMid();
 }
+
+//public String cancelOrder(CancelTrade c) {
+//	
+//	// TODO Auto-generated method stub
+//	return "abc";
+//}
 }

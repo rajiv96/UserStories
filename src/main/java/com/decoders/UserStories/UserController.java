@@ -12,12 +12,19 @@ public class UserController {
 UserService sv;
 
 @RequestMapping(value="/postmarkettrade",method=RequestMethod.POST)
-public int createMarketOrder(@RequestBody MarketOrderRepository m){
+public int createMarketOrder(@RequestBody TradeRepository m){
 return sv.createMarketOrder(m);
 }
 
 @RequestMapping(value="/postlimittrade",method=RequestMethod.POST)
-public int createLimitOrder(@RequestBody LimitOrderRepository l){
+public int createLimitOrder(@RequestBody TradeRepository l){
+	System.out.println(l.getLimittime());
 return sv.createLimitOrder(l);
 }
+
+@RequestMapping(value="/canceltrade",method=RequestMethod.POST)
+public String cancelOrder(@RequestBody CancelTrade trade){
+return sv.cancelOrder(trade);
+}
+
 }
