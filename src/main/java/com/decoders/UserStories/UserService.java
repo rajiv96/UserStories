@@ -260,7 +260,29 @@ public String auditFTR() {
 //	// TODO Auto-generated method stub
 //	return null;
 }
+@Transactional(readOnly=true)
+public List<TradeRepository> findAllOrders() {
+return jdbcTemplate.query("select uid,size,Type,currpair,Time,Limittime,tradetype,price from trade",new UserRowMapper());
+
 }
 
+}
 
+class UserRowMapper implements RowMapper<TradeRepository>
+{
+	@Override
+	public TradeRepository mapRow(ResultSet rs, int rowNum) throws SQLException {
+		TradeRepository order = new TradeRepository();
+		order.setCurrpair(rs.getString("currpair"));
+		order.setPrice(rs.getDouble("price"));
+		order.setUid(rs.getInt("uid"));
+		order.setType(Type.valueOf(rs.getString("Type")));
+		order.setSize(rs.getInt("size"));
+		order.setTime(rs.getTimestamp("Time"));
+		order.setTradetype(tradetype.valueOf(rs.getString("tradetype")));
+		order.setLimittime(rs.getInt("limittime"));
+		return order;
+	}
+	
+}
 

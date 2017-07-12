@@ -2,6 +2,8 @@ package com.decoders.UserStories;
 
 import java.sql.Timestamp;
 
+import org.springframework.stereotype.Component;
+@Component
 public class TradeRepository {
 	private int Limittime;
 	
