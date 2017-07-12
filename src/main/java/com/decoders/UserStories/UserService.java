@@ -82,6 +82,8 @@ public int createLimitOrder(TradeRepository m){
 }
 
 public String cancelOrder(int c) {
+	final String sql1= "insert into cancelledTrade (uid,size,Type,price,Time,Limittime,currpair,tradetype) select uid,size,Type,price,Time,Limittime,currpair,tradetype from trade where id = ?";
+	jdbcTemplate.update(sql1,c);
 	final String sql="DELETE FROM trade WHERE id = ?";
 	int count=jdbcTemplate.update(sql,c);
 	if (count==0)

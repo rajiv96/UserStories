@@ -4,7 +4,8 @@ drop table marketTrades if exists;
 drop table trade if exists;
 drop table finishedTrades if exists;
 drop table historicTrades if exists;
-
+drop table cancelledTrade if exists;
+drop table marketOrder if exists;
 create table users(
 uid int(255) NOT NULL AUTO_INCREMENT,
 username varchar(255) NOT NULL,
@@ -59,4 +60,17 @@ size int(255) NOT NULL,
 price double(255) NOT NULL,
 Time timestamp,
 PRIMARY KEY (hid)
+);
+
+create table cancelledTrade(
+id int(255) NOT NULL AUTO_INCREMENT,
+uid int(255) ,
+size int(255) ,
+Type varchar(255) ,
+price double(255),
+Time timestamp,
+Limittime int(255),
+currpair varchar(255),
+tradetype varchar(255),
+PRIMARY KEY (id)
 );
