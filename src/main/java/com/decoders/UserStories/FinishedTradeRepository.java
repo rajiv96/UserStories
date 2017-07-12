@@ -1,5 +1,7 @@
 package com.decoders.UserStories;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalTime;
 
 public class FinishedTradeRepository {
@@ -51,11 +53,11 @@ public class FinishedTradeRepository {
 	public void setPrice(double price) {
 		this.price = price;
 	}
-	public LocalTime getTime() {
+	public Timestamp getTime() {
 		return time;
 	}
-	public void setTime(LocalTime time) {
-		this.time = time;
+	public void setTime(Timestamp time2) {
+		this.time = time2;
 	}
 	private int fid ;
 	private int buid ;
@@ -65,5 +67,5 @@ public class FinishedTradeRepository {
 	private String currpair;
 	private int size;
 	private double price;
-	private LocalTime time;
+	private Timestamp time;
 }

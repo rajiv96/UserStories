@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
@@ -18,6 +19,7 @@ import java.util.Scanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -192,13 +194,62 @@ for( int c=0;c<recordList.size();c++)
 //}
 return "Sahi hai";
 }//end of fn
-
+class AuditRowMapper implements RowMapper<FinishedTradeRepository>
+{
+	@Override
+	public FinishedTradeRepository mapRow(ResultSet rs,int rowNum) throws SQLException
+	{
+		FinishedTradeRepository ftr=new FinishedTradeRepository();
+		ftr.setBuid(rs.getInt("buid"));
+		ftr.setCurrpair(rs.getString("currpair"));
+		ftr.setFid(rs.getInt("fid"));
+		ftr.setLid(rs.getInt("lid"));
+		ftr.setMid(rs.getInt("mid"));
+		ftr.setPrice(rs.getDouble("price"));
+		ftr.setSize(rs.getInt("size"));
+		ftr.setTime(rs.getTimestamp("Time"));
+		
+		return ftr ;
+		
+	}
+}
+class Audit2RowMapper implements RowMapper<CancelledTradeRepository>
+{
+	@Override
+	public CancelledTradeRepository mapRow(ResultSet rs,int rowNum) throws SQLException
+	{
+		CancelledTradeRepository ftr=new CancelledTradeRepository();
+		ftr.setTradetype(rs.getString("tradetype"));
+		ftr.setCurrpair(rs.getString("currpair"));
+		ftr.setId(rs.getInt("id"));
+		ftr.setUid(rs.getInt("uid"));
+		ftr.setType(rs.getString("Type"));
+		ftr.setLimittime(rs.getInt("Limittime"));
+		
+		//ftr.setFid(rs.getInt("fid"));
+		//ftr.setLid(rs.getInt("lid"));
+		//ftr.setMid(rs.getInt("mid"));
+		ftr.setPrice(rs.getDouble("price"));
+		ftr.setSize(rs.getInt("size"));
+		ftr.setTime(rs.getTimestamp("Time"));
+		
+		return ftr ;
+		
+	}
+}
+@Transactional(readOnly=true)
+public String auditCTR() {
+	jdbcTemplate.query("select * from cancelledTrade", new Audit2RowMapper());
+	return "AuditCTR ";
 }
 
-//public String auditOrder() {
+@Transactional(readOnly=true)
+public String auditFTR() {
+	 jdbcTemplate.query("select * from finishedTrades", new AuditRowMapper());
+	 return "AuditFTR ";
 //	final String sql="select * from finishedTrades";
 //	 Statement stmt = con.createStatement();
-//     ResultSet rs = stmt.executeQuery("SELECT * FROM employee");
+////     ResultSet rs = stmt.executeQuery("SELECT * FROM employee");
 //     System.out.println("id  name    job");
 //     
 //     while (rs.next()) {
@@ -208,5 +259,8 @@ return "Sahi hai";
 //        System.out.println(id+"   "+name+"    "+job);
 //	// TODO Auto-generated method stub
 //	return null;
-//}
+}
+}
+
+
 

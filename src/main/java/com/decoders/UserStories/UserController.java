@@ -1,6 +1,7 @@
 package com.decoders.UserStories;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,11 +34,15 @@ return sv.cancelOrder(t);
 @RequestMapping(value="/csvtodb",method=RequestMethod.GET)
 public String convertCsvtodb() throws IOException{
 return sv.convertCsvtodb();
+
+
 }
 //
-//@RequestMapping(value="/tradeaudit",method=RequestMethod.GET)
-//public String auditOrder(){
-//return sv.auditOrder();
-//}
+@RequestMapping(value="/tradeaudit",method=RequestMethod.GET)
+public String auditFTR(){
+sv.auditFTR();
+//sv.auditCTR();
+return "Succesful sab";
+}
 
 }
