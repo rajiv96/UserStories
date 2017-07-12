@@ -1,6 +1,7 @@
 package com.decoders.UserStories;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,9 +23,9 @@ public int createLimitOrder(@RequestBody TradeRepository l){
 return sv.createLimitOrder(l);
 }
 
-@RequestMapping(value="/canceltrade",method=RequestMethod.POST)
-public String cancelOrder(@RequestBody CancelTrade trade){
-return sv.cancelOrder(trade);
+@RequestMapping(value="/canceltrade/{id}",method=RequestMethod.GET)
+public String cancelOrder(@PathVariable("id") int t){
+return sv.cancelOrder(t);
 }
 
 }

@@ -81,9 +81,15 @@ public int createLimitOrder(TradeRepository m){
 	//return m.getMid();
 }
 
-//public String cancelOrder(CancelTrade c) {
-//	
-//	// TODO Auto-generated method stub
-//	return "abc";
-//}
+public String cancelOrder(int c) {
+	final String sql="DELETE FROM trade WHERE id = ?";
+	int count=jdbcTemplate.update(sql,c);
+	if (count==0)
+		return "Nothing to delete";
+	else
+		return "Successfully deleted";
+//	return (int) primaryKey;
+	// TODO Auto-generated method stub
+
+}
 }
