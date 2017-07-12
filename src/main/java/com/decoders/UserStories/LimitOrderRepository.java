@@ -4,6 +4,13 @@ import java.time.LocalTime;
 
 public class LimitOrderRepository {
 private int lid;
+private int Timelimit; 
+public int getTimelimit() {
+	return Timelimit;
+}
+public void setTimelimit(int timelimit) {
+	this.Timelimit = timelimit;
+}
 public int getLid() {
 	return lid;
 }

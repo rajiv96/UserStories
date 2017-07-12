@@ -51,7 +51,7 @@ public int createMarketOrder(MarketOrderRepository m){
 
 @Transactional
 public int createLimitOrder(LimitOrderRepository m){
-	final String sql="insert into marketTrades(uid,size,Type,currpair,price,Time) values(?,?,?,?,?,?)";
+	final String sql="insert into limitTrades(uid,size,Type,currpair,price,Time,Timelimit) values(?,?,?,?,?,?,?)";
 	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
 	GeneratedKeyHolder holder = new GeneratedKeyHolder();
 	jdbcTemplate.update(new PreparedStatementCreator() {
@@ -66,6 +66,7 @@ public int createLimitOrder(LimitOrderRepository m){
 		        statement.setString(4, m.getCurrpair());
 		        statement.setDouble(5, m.getPrice());
 		        statement.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+		        statement.setInt(7,m.getTimelimit());
 		        return statement;
 		}
 	}, holder);
