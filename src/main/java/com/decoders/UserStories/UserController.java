@@ -1,5 +1,7 @@
 package com.decoders.UserStories;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,5 +29,15 @@ return sv.createLimitOrder(l);
 public String cancelOrder(@PathVariable("id") int t){
 return sv.cancelOrder(t);
 }
+
+@RequestMapping(value="/csvtodb",method=RequestMethod.GET)
+public String convertCsvtodb() throws IOException{
+return sv.convertCsvtodb();
+}
+//
+//@RequestMapping(value="/tradeaudit",method=RequestMethod.GET)
+//public String auditOrder(){
+//return sv.auditOrder();
+//}
 
 }

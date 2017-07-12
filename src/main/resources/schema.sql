@@ -55,6 +55,8 @@ PRIMARY KEY (fid)
 
 create table historicTrades(
 hid int(255) NOT NULL AUTO_INCREMENT,
+buid int(255) NOT NULL,
+suid int(255) NOT NULL,
 currpair varchar(255),
 size int(255) NOT NULL,
 price double(255) NOT NULL,

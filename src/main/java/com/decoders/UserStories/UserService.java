@@ -1,5 +1,7 @@
 package com.decoders.UserStories;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -8,6 +10,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -94,4 +100,113 @@ public String cancelOrder(int c) {
 	// TODO Auto-generated method stub
 
 }
+
+@Transactional
+public String convertCsvtodb() throws IOException {
+	
+	Scanner scanner  = new Scanner(new File("/home/java/Downloads/UserStories/src/main/java/com/decoders/UserStories/data.csv"));
+String temp;
+Scanner dataScanner = null;
+int index = 0;
+List<HistoricTradesRepository> recordList = new ArrayList<>();
+scanner.nextLine();
+while (scanner.hasNextLine()) {
+	dataScanner = new Scanner(scanner.nextLine());
+	dataScanner.useDelimiter(",");
+	HistoricTradesRepository record = new HistoricTradesRepository();
+
+	while (dataScanner.hasNext()) {
+		String data = dataScanner.next();
+		if(data==null|| data.equals(""))
+		{
+			record = null;
+			break;
+		}
+		else if (index == 0 && data!=null)
+			record.setBuid(Integer.parseInt(data));
+		else if (index == 1 && data!=null)
+			record.setSuid(Integer.parseInt(data));
+		else if (index == 2 && data!=null)
+			record.setCurrpair(data);
+		else if(index==3 && data!=null)
+		{
+			record.setSize(Integer.parseInt(data));
+		}
+		else if(index==4 && data!=null)
+		{
+			record.setPrice(Double.parseDouble(data));
+		}
+		else if (index == 5 && data!=null)
+		{
+			temp=data.replace('_',' ');
+			
+			record.setTime(Timestamp.valueOf(temp));
+			//record.setDate_time(data);	
+		}
+		else
+			System.out.println("invalid data::" + data);
+		
+		index++;
+	}
+	index = 0;
+	if(record!=null)
+	recordList.add(record);
+	
+}//end of while
+scanner.close();
+
+for( int c=0;c<recordList.size();c++)
+{
+	final String sql="insert into historicTrades(buid,suid,currpair,size,price,Time) values(?,?,?,?,?,?)";
+	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
+	GeneratedKeyHolder holder = new GeneratedKeyHolder();
+	final int i=c;
+	System.out.println(i+" ");
+	jdbcTemplate.update(new PreparedStatementCreator() {
+		@Override
+		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				
+			
+			  PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		      
+			  	statement.setInt(1, recordList.get(i).getBuid());
+		       // else continue;
+		        statement.setInt(2, recordList.get(i).getSuid());
+		        statement.setString(3, recordList.get(i).getCurrpair());
+		        statement.setInt(4, recordList.get(i).getSize());
+		        statement.setDouble(5, recordList.get(i).getPrice());
+		        statement.setTimestamp(6,recordList.get(i).getTime());   
+		     
+		        return statement;
+		}
+	}, holder);
+
+	long primaryKey = holder.getKey().longValue();
 }
+
+//return recordList;
+//Iterator<HistoricTradesRepository> i = recordList.iterator();
+//while(i.hasNext())
+//{
+//	
+//}
+return "Sahi hai";
+}//end of fn
+
+}
+
+//public String auditOrder() {
+//	final String sql="select * from finishedTrades";
+//	 Statement stmt = con.createStatement();
+//     ResultSet rs = stmt.executeQuery("SELECT * FROM employee");
+//     System.out.println("id  name    job");
+//     
+//     while (rs.next()) {
+//        int id = rs.getInt("id");
+//        String name = rs.getString("name");
+//        String job = rs.getString("job");
+//        System.out.println(id+"   "+name+"    "+job);
+//	// TODO Auto-generated method stub
+//	return null;
+//}
+
