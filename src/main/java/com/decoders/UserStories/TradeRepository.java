@@ -6,7 +6,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class TradeRepository {
 	private int Limittime;
-	
+	@Override
+	public String toString()
+	{
+		
+		
+		String s = Integer.toString(id) +", "+ Integer.toString(uid)+", "+ size +", "+ Type +", "+ price +", "+ Time+", "+currpair+", "+tradetype+"\n";
+				return s;
+	}
 	public int getLimittime() {
 		return this.Limittime;
 	}

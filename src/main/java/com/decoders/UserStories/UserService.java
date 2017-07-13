@@ -266,6 +266,20 @@ return jdbcTemplate.query("select uid,size,Type,currpair,Time,Limittime,tradetyp
 
 }
 
+public String openTrades(String username) {
+	// TODO Auto-generated method stub
+	
+	 List<TradeRepository> l=jdbcTemplate.query("select * from trade where uid=select uid from users where username = ?", new Object[]{username},new UserRowMapper());
+	 if (l.isEmpty()==false)
+		 return l.toString();
+	 else return "No open trades";
+}
+
+public List<CancelledTradeRepository> closedTrades() {
+	// TODO Auto-generated method stub
+	return jdbcTemplate.query("select buid,suid,mid,lid,currpair,size,price,Time from cancelledTrade UNION select buid,suid,mid,lid,currpair,size,price,Time from finishedTrades",new Audit2RowMapper());
+}
+
 }
 
 class UserRowMapper implements RowMapper<TradeRepository>
@@ -285,4 +299,6 @@ class UserRowMapper implements RowMapper<TradeRepository>
 	}
 	
 }
+
+
 

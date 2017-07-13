@@ -34,9 +34,17 @@ return sv.cancelOrder(t);
 @RequestMapping(value="/csvtodb",method=RequestMethod.GET)
 public String convertCsvtodb() throws IOException{
 return sv.convertCsvtodb();
-
-
 }
+@RequestMapping(value="/opentrades/{username}",method=RequestMethod.GET)
+public String openTrades(@PathVariable("username") String username) {
+return sv.openTrades(username);
+}
+
+@RequestMapping(value="/closedtrades",method=RequestMethod.GET)
+public List<CancelledTradeRepository> closedTrades() {
+return sv.closedTrades();
+}
+
 //
 @RequestMapping(value="/tradeaudit",method=RequestMethod.GET)
 public String auditFTR(){
