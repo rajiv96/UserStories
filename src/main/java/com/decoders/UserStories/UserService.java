@@ -237,6 +237,34 @@ class Audit2RowMapper implements RowMapper<CancelledTradeRepository>
 		
 	}
 }
+@Transactional
+
+public int createUserRepository(UserRepository m){
+	
+	final String sql="insert into users(username,password,desig) values(?,?,?)";
+	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
+	GeneratedKeyHolder holder = new GeneratedKeyHolder();
+	jdbcTemplate.update(new PreparedStatementCreator() {
+		@Override
+		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+			
+			
+			  PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		        statement.setString(1, m.getUsername());
+		        statement.setString(2, m.getPassword());
+		        statement.setString(3, m.getDesignation());
+		      
+		       
+		        return statement;
+		}
+	}, holder);
+
+	long primaryKey = holder.getKey().longValue();
+	return (int) primaryKey;
+	//final String sql2="select mid from marketTrades(uid,size,Type,currpair,price,Time) where uid=m.getUid() & size=m.getSize()";
+	
+	//return m.getMid();
+}
 @Transactional(readOnly=true)
 public String auditCTR() {
 	jdbcTemplate.query("select * from cancelledTrade", new Audit2RowMapper());
@@ -263,6 +291,12 @@ public String auditFTR() {
 @Transactional(readOnly=true)
 public List<TradeRepository> findAllOrders() {
 return jdbcTemplate.query("select uid,size,Type,currpair,Time,Limittime,tradetype,price from trade",new UserRowMapper());
+
+}
+@Transactional(readOnly=true)
+public List<UserRepository> findAllUsers() {
+
+return jdbcTemplate.query("select username,password,desig from users",new UserMapping());
 
 }
 
@@ -299,6 +333,18 @@ class UserRowMapper implements RowMapper<TradeRepository>
 		order.setTradetype(tradetype.valueOf(rs.getString("tradetype")));
 		order.setLimittime(rs.getInt("limittime"));
 		return order;
+	}
+
+}
+class UserMapping implements RowMapper<UserRepository>
+{
+	@Override
+	public UserRepository mapRow(ResultSet rs, int rowNum) throws SQLException {
+		UserRepository addedUser = new UserRepository();
+		addedUser.setUsername(rs.getString("username"));
+		addedUser.setPassword(rs.getString("password"));
+		addedUser.setDesignation(rs.getString("desig"));   
+		return addedUser;
 	}
 	
 }
