@@ -21,6 +21,10 @@ public int createMarketOrder(@RequestBody TradeRepository m){
 return sv.createMarketOrder(m);
 }
 
+@RequestMapping(value="/createuser",method=RequestMethod.POST)
+public int createUserRepository(@RequestBody UserRepository m){
+return sv.createUserRepository(m);
+}
 
 
 @RequestMapping(value="/postlimittrade",method=RequestMethod.POST)
@@ -42,6 +46,7 @@ return sv.convertCsvtodb();
 public String openTrades(@PathVariable("username") String username) {
 return sv.openTrades(username);
 }
+
 
 @RequestMapping(value="/closedtrades/{username}/{startdate}/{enddate}",method=RequestMethod.GET)
 public String closedTrades(@PathVariable("username") String username,@PathVariable("startdate") Timestamp time1,@PathVariable("enddate") Timestamp time2) {

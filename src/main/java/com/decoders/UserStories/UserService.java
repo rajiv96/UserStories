@@ -29,6 +29,146 @@ public class UserService {
 @Autowired
 private JdbcTemplate jdbcTemplate;
 
+//////////
+@Transactional
+public int createHistoryTransaction(HistoricTradesRepository m){
+	final String sql="insert into historicTrades (currpair,size,price,Time) values(?,?,?,?)";
+	
+	
+	/*historicTrades (buid,suid,currpair,size,price,Time) values (2,23,'sad',123,20000,'2014-02-01 12:05:12') */
+	
+	
+	GeneratedKeyHolder holder = new GeneratedKeyHolder();
+	jdbcTemplate.update(new PreparedStatementCreator() {
+		@Override
+		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+			
+			
+			  PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		        //statement.setInt(1, m.getBuid());
+		        //statement.setInt(2, m.getSuid());
+		        statement.setString(1, m.getCurrpair());
+		        statement.setInt(2, m.getSize());
+		       statement.setDouble(3, m.getPrice());
+		        statement.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+		        //statement.setString(6,"market");
+		        return statement;
+		}
+	}, holder);
+
+	long primaryKey = holder.getKey().longValue();
+	return (int) primaryKey;
+	
+}
+
+@Transactional
+public int createCancelledOrder(CancelledTradeRepository m){
+	final String sql="insert into cancelledTrade(uid,size,Type,currpair,price,Limittime,Time,tradetype) values(?,?,?,?,?,?,?,?)";
+	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
+	GeneratedKeyHolder holder = new GeneratedKeyHolder();
+	jdbcTemplate.update(new PreparedStatementCreator() {
+		@Override
+		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+			
+			
+			  PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		        statement.setInt(1, m.getUid());
+		        statement.setLong(2, m.getSize());
+		        statement.setString(3, m.getType());
+		        statement.setString(4, m.getCurrpair());
+		        statement.setDouble(5, m.getPrice());
+		        System.out.println(m.getLimittime());
+		        statement.setInt(6,m.getLimittime());
+		        statement.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));   
+		        statement.setString(8, "limit");
+		        return statement;
+		}
+	}, holder);
+
+	long primaryKey = holder.getKey().longValue();
+	return (int) primaryKey;
+	
+}
+
+//findcancelled
+@Transactional(readOnly=true)
+public List<CancelledTradeRepository> findcancelled() {
+return jdbcTemplate.query("select uid,size,Type,price,Time,Limittime,currpair,tradetype from cancelledTrade",new AuditCancelled());
+
+}
+
+
+
+class AuditCancelled implements RowMapper<CancelledTradeRepository>
+{
+	@Override
+	public CancelledTradeRepository mapRow(ResultSet rs,int rowNum) throws SQLException
+	{
+		CancelledTradeRepository ftr=new CancelledTradeRepository();
+		ftr.setTradetype(rs.getString("tradetype"));
+		ftr.setCurrpair(rs.getString("currpair"));
+		//ftr.setId(rs.getInt("id"));
+		ftr.setUid(rs.getInt("uid"));
+		ftr.setType(rs.getString("Type"));
+		ftr.setLimittime(rs.getInt("Limittime"));
+		
+		//ftr.setFid(rs.getInt("fid"));
+		//ftr.setLid(rs.getInt("lid"));
+		//ftr.setMid(rs.getInt("mid"));
+		ftr.setPrice(rs.getDouble("price"));
+		ftr.setSize(rs.getInt("size"));
+		ftr.setTime(rs.getTimestamp("Time"));
+		
+		return ftr ;
+		
+	}
+}
+
+
+
+
+//findfinished
+@Transactional(readOnly=true)
+public List<FinishedTradeRepository> findfinished() {
+return jdbcTemplate.query("select fid,buid,suid,mid,lid,currpair,size,price,Time from finishedTrades",new AuditRowMapper());
+
+}
+
+
+@Transactional
+public int createFinished(FinishedTradeRepository m){
+	final String sql="insert into finishedTrades(buid,suid,mid,lid,size,currpair,price,Time) values(?,?,?,?,?,?,?,?)";
+	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
+	GeneratedKeyHolder holder = new GeneratedKeyHolder();
+	jdbcTemplate.update(new PreparedStatementCreator() {
+		@Override
+		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+			
+			
+			  PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		        statement.setInt(1, m.getBuid());
+		        statement.setInt(2, m.getSuid());
+		        statement.setInt(3, m.getMid());
+		        statement.setInt(4, m.getLid());
+		        statement.setInt(5, m.getSize());
+		        //System.out.println(m.getLimittime());
+		        statement.setString(6,m.getCurrpair());
+		        statement.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));   
+		        statement.setDouble(7,m.getPrice());
+		        return statement;
+		}
+	}, holder);
+
+	long primaryKey = holder.getKey().longValue();
+	return (int) primaryKey;
+	
+}
+
+
+
+
+
+///////////
 @Transactional
 public int createMarketOrder(TradeRepository m){
 	final String sql="insert into trade(uid,size,Type,currpair,Time,tradetype) values(?,?,?,?,?,?)";
@@ -60,7 +200,7 @@ public int createMarketOrder(TradeRepository m){
 
 @Transactional
 public int createLimitOrder(TradeRepository m){
-	List<UserRepository> t= jdbcTemplate.query("select * from users where username =? AND password =?",new Object[]{m.getUsername(),m.getPassword()},new User1RowMapper());
+	List<UserRepository> t= jdbcTemplate.query("select * from users where username =? AND password =?",new Object[]{m.getUsername(),Security.getMD5(m.getPassword())},new User1RowMapper());
 	if(t.isEmpty())
 		return 0;
 	else
@@ -107,6 +247,17 @@ public String cancelOrder(int c) {
 	// TODO Auto-generated method stub
 
 }
+
+
+@Transactional(readOnly=true)
+public List<HistoricTradesRepository> checkHistory() {
+
+return jdbcTemplate.query("select currpair,size,price,Time from historicTrades",new HistoryMapping());
+
+//historicTrades(buid,suid,currpair,size,price,Time) values(?,?,?,?)
+
+}
+
 
 @Transactional
 public String convertCsvtodb() throws IOException {
@@ -320,7 +471,7 @@ public int createUserRepository(UserRepository m){
 			
 			  PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		        statement.setString(1, m.getUsername());
-		        statement.setString(2, m.getPassword());
+		        statement.setString(2, Security.getMD5(m.getPassword()));
 		        statement.setString(3, m.getDesignation());
 		      
 		       
@@ -429,3 +580,30 @@ class UserMapping implements RowMapper<UserRepository>
 }
 
 
+class  HistoryMapping implements RowMapper<HistoricTradesRepository>
+{
+	@Override
+	public HistoricTradesRepository mapRow(ResultSet rs, int rowNum) throws SQLException {
+		HistoricTradesRepository addedUser = new HistoricTradesRepository();
+		//addedUser.setBuid(rs.getInt("buid")); 
+		addedUser.setCurrpair(rs.getString("currpair")); 
+		addedUser.setPrice(rs.getDouble("price")); 
+		//addedUser.setSuid(rs.getInt("suid"));
+		addedUser.setSize(rs.getInt("size"));
+		
+		
+		 
+//		addedUser.setPassword(rs.getString("password"));
+//		addedUser.setDesignation(rs.getString("desig"));   
+		
+		/*
+
+
+
+size int(255) NOT NULL,
+price double(255) NOT NULL,
+Time timestamp, */
+		return addedUser;
+	}
+	
+}

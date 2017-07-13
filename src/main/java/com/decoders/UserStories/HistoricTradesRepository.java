@@ -2,6 +2,9 @@ package com.decoders.UserStories;
 
 import java.sql.Timestamp;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class HistoricTradesRepository {
 	public int getSuid() {
 		return suid;
