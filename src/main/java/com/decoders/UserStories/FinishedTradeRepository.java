@@ -5,6 +5,12 @@ import java.sql.Timestamp;
 import java.time.LocalTime;
 
 public class FinishedTradeRepository {
+	@Override
+	public String toString()
+	{
+		String s = Integer.toString(buid) +", "+ Integer.toString(suid)+", "+Integer.toString(mid)+", "+Integer.toString(lid)+", "+ size +", "+ price +", "+ time+", "+currpair+"\n";
+				return s;
+	}
 	public int getFid() {
 		return fid;
 	}

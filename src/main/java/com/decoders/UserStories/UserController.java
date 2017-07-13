@@ -40,8 +40,8 @@ public String openTrades(@PathVariable("username") String username) {
 return sv.openTrades(username);
 }
 
-@RequestMapping(value="/closedtrades",method=RequestMethod.GET)
-public List<CancelledTradeRepository> closedTrades() {
+@RequestMapping(value="/closedtrades/{username}/{startdate}/{enddate}",method=RequestMethod.GET)
+public String closedTrades(@PathVariable("username","startdate","enddate") String username,) {
 return sv.closedTrades();
 }
 

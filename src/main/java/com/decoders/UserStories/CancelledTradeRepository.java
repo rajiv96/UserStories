@@ -3,6 +3,12 @@ package com.decoders.UserStories;
 import java.sql.Timestamp;
 
 public class CancelledTradeRepository {
+	@Override
+	public String toString()
+	{
+	String s = Integer.toString(uid) +", "+ size +", "+ Type +", "+ price +", "+ Time+", "+Limittime+", "+currpair+", "+tradetype+"\n";
+			return s;
+	}
 private int id;
 public int getId() {
 	return id;

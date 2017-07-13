@@ -275,9 +275,11 @@ public String openTrades(String username) {
 	 else return "No open trades";
 }
 
-public List<CancelledTradeRepository> closedTrades() {
+public String closedTrades() {
 	// TODO Auto-generated method stub
-	return jdbcTemplate.query("select buid,suid,mid,lid,currpair,size,price,Time from cancelledTrade UNION select buid,suid,mid,lid,currpair,size,price,Time from finishedTrades",new Audit2RowMapper());
+	List<CancelledTradeRepository> l1= jdbcTemplate.query("select id,uid,size,Type,price,Time,Limittime,currpair,tradetype from cancelledTrade",new Audit2RowMapper());
+	List<FinishedTradeRepository> l2= jdbcTemplate.query("select fid,buid,suid,mid,lid,currpair,size,price,Time from finishedTrades", new AuditRowMapper());
+	return "Cancelled Trades:"+l1.toString()+"\n"+"Finished Trades:"+l2.toString();
 }
 
 }
