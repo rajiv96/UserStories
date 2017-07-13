@@ -60,7 +60,11 @@ public int createMarketOrder(TradeRepository m){
 
 @Transactional
 public int createLimitOrder(TradeRepository m){
-	final String sql="insert into trade(uid,size,Type,currpair,price,Limittime,Time,tradetype) values(?,?,?,?,?,?,?,?)";
+	List<UserRepository> t= jdbcTemplate.query("select * from users where username =? AND password =?",new Object[]{m.getUsername(),m.getPassword()},new User1RowMapper());
+	if(t.isEmpty())
+		return 0;
+	else
+	{final String sql="insert into trade(uid,size,Type,currpair,price,Limittime,Time,tradetype) values(?,?,?,?,?,?,?,?)";
 	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
 	GeneratedKeyHolder holder = new GeneratedKeyHolder();
 	jdbcTemplate.update(new PreparedStatementCreator() {
@@ -87,6 +91,7 @@ public int createLimitOrder(TradeRepository m){
 	//final String sql2="select mid from marketTrades(uid,size,Type,currpair,price,Time) where uid=m.getUid() & size=m.getSize()";
 	
 	//return m.getMid();
+	}
 }
 
 public String cancelOrder(int c) {
@@ -106,60 +111,96 @@ public String cancelOrder(int c) {
 @Transactional
 public String convertCsvtodb() throws IOException {
 	
-	Scanner scanner  = new Scanner(new File("/home/java/Downloads/UserStories/src/main/java/com/decoders/UserStories/data.csv"));
+	Scanner scanner  = new Scanner(new File("/home/java/Desktop/UserStories/src/main/java/com/decoders/UserStories/data.csv"));
 String temp;
 Scanner dataScanner = null;
 int index = 0;
+int flag = 0;
 List<HistoricTradesRepository> recordList = new ArrayList<>();
+List<HistoricTradesRepository> badRecordList = new ArrayList<>();
 scanner.nextLine();
 while (scanner.hasNextLine()) {
 	dataScanner = new Scanner(scanner.nextLine());
 	dataScanner.useDelimiter(",");
+	
 	HistoricTradesRepository record = new HistoricTradesRepository();
-
-	while (dataScanner.hasNext()) {
-		String data = dataScanner.next();
-		if(data==null|| data.equals(""))
-		{
-			record = null;
-			break;
+	while (dataScanner.hasNext() || index < 4) {
+//		flag = 0;
+//		if(data==null|| data.equals(""))
+//		{
+//			record = null;
+//			break;
+//		}
+		if(!dataScanner.hasNext() && index == 3) {
+			flag = -1;
+			record.setTime(null);
 		}
-		else if (index == 0 && data!=null)
-			record.setBuid(Integer.parseInt(data));
-		else if (index == 1 && data!=null)
-			record.setSuid(Integer.parseInt(data));
-		else if (index == 2 && data!=null)
+		else {
+			String data = dataScanner.next();
+			System.out.println("Hello" + data);
+
+		if (index == 0 ){
+			if(data == null || data.equals("")){
+				record.setCurrpair(null);
+				flag = -1;
+			}
+			else
 			record.setCurrpair(data);
-		else if(index==3 && data!=null)
+		}
+		else if(index==1 )
 		{
+			if( data == null || data.equals("")){
+				flag = -1;
+				record.setSize(-1);
+			}
+			else	
 			record.setSize(Integer.parseInt(data));
 		}
-		else if(index==4 && data!=null)
+		else if(index==2 )
 		{
+			if( data == null || data.equals("")){
+				flag = -1;
+				record.setPrice(-1);
+			}
+			else
 			record.setPrice(Double.parseDouble(data));
 		}
-		else if (index == 5 && data!=null)
+		else if (index == 3 )
 		{
-			temp=data.replace('_',' ');
 			
+//			if(Timestamp.valueOf(data).toString() == "\n"){
+//				flag = -1;
+//				record.setTime(null);
+//				System.out.println("hello");
+//			}
+				temp=data.replace('_',' ');
 			record.setTime(Timestamp.valueOf(temp));
 			//record.setDate_time(data);	
 		}
-		else
-			System.out.println("invalid data::" + data);
-		
+		else {
+		System.out.println("invalid data::" + data);
+		//flag = -1;
+			
+		}
+		}
 		index++;
 	}
 	index = 0;
-	if(record!=null)
-	recordList.add(record);
-	
+	System.out.printf("%d", flag);
+	if(flag != -1) {
+//		flag = 0;
+//		System.out.println(flag + "");
+		recordList.add(record);
+	}
+	else
+		badRecordList.add(record);
+	flag = 0;
 }//end of while
 scanner.close();
 
 for( int c=0;c<recordList.size();c++)
 {
-	final String sql="insert into historicTrades(buid,suid,currpair,size,price,Time) values(?,?,?,?,?,?)";
+	final String sql="insert into historicTrades(currpair,size,price,Time) values(?,?,?,?)";
 	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
 	GeneratedKeyHolder holder = new GeneratedKeyHolder();
 	final int i=c;
@@ -171,13 +212,41 @@ for( int c=0;c<recordList.size();c++)
 			
 			  PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 		      
-			  	statement.setInt(1, recordList.get(i).getBuid());
-		       // else continue;
-		        statement.setInt(2, recordList.get(i).getSuid());
-		        statement.setString(3, recordList.get(i).getCurrpair());
-		        statement.setInt(4, recordList.get(i).getSize());
-		        statement.setDouble(5, recordList.get(i).getPrice());
-		        statement.setTimestamp(6,recordList.get(i).getTime());   
+//			  	statement.setInt(1, recordList.get(i).getBuid());
+//		       // else continue;
+//		        statement.setInt(2, recordList.get(i).getSuid());
+		        statement.setString(1, recordList.get(i).getCurrpair());
+		        statement.setInt(2, recordList.get(i).getSize());
+		        statement.setDouble(3, recordList.get(i).getPrice());
+		        statement.setTimestamp(4,recordList.get(i).getTime());   
+		     
+		        return statement;
+		}
+	}, holder);
+
+	long primaryKey = holder.getKey().longValue();
+}
+for( int c=0;c<badRecordList.size();c++)
+{
+	final String sql="insert into auditlog(currpair,size,price,Time,filename) values(?,?,?,?,'data.csv')";
+	//jdbcTemplate.update(sql,m.getUid(),m.getSize(),m.getType().toString(),m.getCurrpair(),m.getPrice(),LocalTime.now());
+	GeneratedKeyHolder holder = new GeneratedKeyHolder();
+	final int i=c;
+	System.out.println(i+" ");
+	jdbcTemplate.update(new PreparedStatementCreator() {
+		@Override
+		public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				
+			
+			  PreparedStatement statement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		      
+//			  	statement.setInt(1, recordList.get(i).getBuid());
+//		       // else continue;
+//		        statement.setInt(2, recordList.get(i).getSuid());
+		        statement.setString(1, badRecordList.get(i).getCurrpair());
+		        statement.setInt(2,  badRecordList.get(i).getSize());
+		        statement.setDouble(3,  badRecordList.get(i).getPrice());
+		        statement.setTimestamp(4, badRecordList.get(i).getTime());   
 		     
 		        return statement;
 		}
@@ -192,7 +261,7 @@ for( int c=0;c<recordList.size();c++)
 //{
 //	
 //}
-return "Sahi hai";
+return "CSV to DB done";
 }//end of fn
 class AuditRowMapper implements RowMapper<FinishedTradeRepository>
 {
@@ -273,8 +342,17 @@ public String auditCTR() {
 
 @Transactional(readOnly=true)
 public String auditFTR() {
-	 jdbcTemplate.query("select * from finishedTrades", new AuditRowMapper());
-	 return "AuditFTR ";
+	
+	List<CancelledTradeRepository> l1= jdbcTemplate.query("select id,uid,size,Type,price,Time,Limittime,currpair,tradetype from cancelledTrade",new Audit2RowMapper());
+	List<FinishedTradeRepository> l2= jdbcTemplate.query("select fid,buid,suid,mid,lid,currpair,size,price,Time from finishedTrades",new AuditRowMapper());
+	return "Audit enteries <br><br> "
+			+ "Cancelled Trades:<br><br>"+l1.toString()+"\n"+"<br><br>Finished Trades:<br><br>"+l2.toString();
+	
+	
+	
+	
+//	jdbcTemplate.query("select * from finishedTrades", new AuditRowMapper());
+	// return "AuditFTR ";
 //	final String sql="select * from finishedTrades";
 //	 Statement stmt = con.createStatement();
 ////     ResultSet rs = stmt.executeQuery("SELECT * FROM employee");
@@ -336,6 +414,7 @@ class UserRowMapper implements RowMapper<TradeRepository>
 	}
 
 }
+
 class UserMapping implements RowMapper<UserRepository>
 {
 	@Override

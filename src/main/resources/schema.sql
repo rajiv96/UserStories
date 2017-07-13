@@ -6,6 +6,8 @@ drop table finishedTrades if exists;
 drop table historicTrades if exists;
 drop table cancelledTrade if exists;
 drop table marketOrder if exists;
+drop table auditlog if exists;
+drop table audit if exists;
 create table users(
 uid int(255) NOT NULL AUTO_INCREMENT,
 username varchar(255) NOT NULL,
@@ -55,8 +57,6 @@ PRIMARY KEY (fid)
 
 create table historicTrades(
 hid int(255) NOT NULL AUTO_INCREMENT,
-buid int(255) NOT NULL,
-suid int(255) NOT NULL,
 currpair varchar(255),
 size int(255) NOT NULL,
 price double(255) NOT NULL,
@@ -75,4 +75,21 @@ Limittime int(255),
 currpair varchar(255),
 tradetype varchar(255),
 PRIMARY KEY (id)
+);
+
+create table auditlog(
+id int(255) NOT NULL AUTO_INCREMENT,
+currpair varchar(255),
+size int(255),
+price double(255),
+Time timestamp,
+filename varchar(255)
+);
+
+create table audit(
+id int(255) NOT NULL AUTO_INCREMENT,
+currpair varchar(255),
+size int(255),
+price double(255),
+Time timestamp
 );

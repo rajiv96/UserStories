@@ -21,6 +21,8 @@ public int createMarketOrder(@RequestBody TradeRepository m){
 return sv.createMarketOrder(m);
 }
 
+
+
 @RequestMapping(value="/postlimittrade",method=RequestMethod.POST)
 public int createLimitOrder(@RequestBody TradeRepository l){
 	System.out.println(l.getLimittime());
@@ -51,9 +53,9 @@ public String closedTrades(@PathVariable("username") String username,@PathVariab
 //
 @RequestMapping(value="/tradeaudit",method=RequestMethod.GET)
 public String auditFTR(){
-sv.auditFTR();
+return sv.auditFTR();
 //sv.auditCTR();
-return "Succesful sab";
+//return "Audit Trade Success";
 }
 
 }
