@@ -275,10 +275,11 @@ public String openTrades(String username) {
 	 else return "No open trades";
 }
 
-public String closedTrades() {
+public String closedTrades(String s,Timestamp time1,Timestamp time2) {
 	// TODO Auto-generated method stub
-	List<CancelledTradeRepository> l1= jdbcTemplate.query("select id,uid,size,Type,price,Time,Limittime,currpair,tradetype from cancelledTrade",new Audit2RowMapper());
-	List<FinishedTradeRepository> l2= jdbcTemplate.query("select fid,buid,suid,mid,lid,currpair,size,price,Time from finishedTrades", new AuditRowMapper());
+	
+	List<CancelledTradeRepository> l1= jdbcTemplate.query("select id,uid,size,Type,price,Time,Limittime,currpair,tradetype from cancelledTrade where uid=select uid from users where username = ? AND Time BETWEEN ? AND ?", new Object[]{s,time1,time2},new Audit2RowMapper());
+	List<FinishedTradeRepository> l2= jdbcTemplate.query("select fid,buid,suid,mid,lid,currpair,size,price,Time from finishedTrades where buid=select uid from users where username = ? AND Time BETWEEN ? AND ?", new Object[]{s,time1,time2}, new AuditRowMapper());
 	return "Cancelled Trades:"+l1.toString()+"\n"+"Finished Trades:"+l2.toString();
 }
 
@@ -301,6 +302,5 @@ class UserRowMapper implements RowMapper<TradeRepository>
 	}
 	
 }
-
 
 

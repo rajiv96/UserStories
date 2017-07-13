@@ -1,6 +1,7 @@
 package com.decoders.UserStories;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,10 @@ return sv.openTrades(username);
 }
 
 @RequestMapping(value="/closedtrades/{username}/{startdate}/{enddate}",method=RequestMethod.GET)
-public String closedTrades(@PathVariable("username","startdate","enddate") String username,) {
-return sv.closedTrades();
+public String closedTrades(@PathVariable("username") String username,@PathVariable("startdate") Timestamp time1,@PathVariable("enddate") Timestamp time2) {
+
+	return sv.closedTrades(username,time1,time2);
+
 }
 
 //
